@@ -5,12 +5,18 @@
 #define FALSE 0
 
 // Init the array with the start sudoku field
-char ** init_sudoku(char ** game) {
+char ** init_sudoku(char ** game, char ** fixed) {
     
-    //// allocate the memory for a array of pointers to arrays ////
+    //// allocate the memory for the game array ////
     game = (char **) malloc(9 * sizeof(char * ));
     for (int row = 0; row < 9; row ++) {
         game[row] = (char * ) malloc(9 * sizeof(char));
+    }
+
+    //// allocate the memory for the fixed array ////
+    fixed = (char **) malloc(9 * sizeof(char * ));
+    for (int row = 0; row < 9; row ++) {
+        fixed[row] = (char * ) malloc(9 * sizeof(char));
     }
 
     //// create the sudoku values ////
@@ -21,9 +27,18 @@ char ** init_sudoku(char ** game) {
         }
     }
 
+    //// get what values are fixed from the game array ////
+    for (int y = 0; y < 9; y++) {
+        for (int x = 0 < 9; x++) {
+            if (game[y][x] == 0) fixed[y][x] = FALSE;
+            else fixed[y][x] = TRUE;
+        }
+    }
+
     //// return the initialised game array pointer ////
     return game;
 }
+
 
 void show_game(char ** game) {
     int x, y, i;
@@ -73,6 +88,7 @@ void show_game(char ** game) {
     printf("\n");
 
 }
+
 
 int check_solved(char ** game) {
     int x, y;
@@ -131,13 +147,17 @@ int check_solved(char ** game) {
 }
 
 
-
 int main () {
     
-    // Create the main array
+    // create the main array that holds the values
     char ** game;
 
-    game = init_sudoku(game);
+    // crete the array that stores if a value is changeable
+    // 0 - value can be changed
+    // 1 - value is fixed 
+    char ** fixed;
+
+    game = init_sudoku(game, fixed);
 
     show_game(game);
 
