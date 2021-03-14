@@ -4,19 +4,20 @@
 #define TRUE 1
 #define FALSE 0
 
+// declare all functions
+char ** init_sudoku(char ** game);
+char ** get_fixed_values(char ** game, char ** fixed);
+char ** get_user_action(char ** game, char ** fixed);
+void show_game(char ** game);
+int check_solved(char ** game);
+
 // Init the array with the start sudoku field
-char ** init_sudoku(char ** game, char ** fixed) {
+char ** init_sudoku(char ** game) {
     
     //// allocate the memory for the game array ////
     game = (char **) malloc(9 * sizeof(char * ));
     for (int row = 0; row < 9; row ++) {
         game[row] = (char * ) malloc(9 * sizeof(char));
-    }
-
-    //// allocate the memory for the fixed array ////
-    fixed = (char **) malloc(9 * sizeof(char * ));
-    for (int row = 0; row < 9; row ++) {
-        fixed[row] = (char * ) malloc(9 * sizeof(char));
     }
 
     //// create the sudoku values ////
@@ -27,15 +28,54 @@ char ** init_sudoku(char ** game, char ** fixed) {
         }
     }
 
+    //// return the initialised game array pointer ////
+    return game;
+}
+
+
+char ** get_fixed_values(char ** game, char ** fixed) {
+    
+    //// allocate the memory for the fixed array ////
+    fixed = (char **) malloc(9 * sizeof(char * ));
+    for (int row = 0; row < 9; row ++) {
+        fixed[row] = (char * ) malloc(9 * sizeof(char));
+    }
+
     //// get what values are fixed from the game array ////
     for (int y = 0; y < 9; y++) {
-        for (int x = 0 < 9; x++) {
-            if (game[y][x] == 0) fixed[y][x] = FALSE;
+        for (int x = 0; x < 9; x++) {
+            if (game[y][x] == 0) fixed[y][x] = FALSE; 
             else fixed[y][x] = TRUE;
         }
     }
 
-    //// return the initialised game array pointer ////
+    // retuen the fixed array
+    return fixed;
+}
+
+
+// change the game array 
+char ** get_user_action(char ** game, char ** fixed) {
+    // get user input
+    int x, y, value;
+    printf(">>> ");
+    scanf("%d:%d %d", &x, &y, &value);
+
+    // change y and y so they start at 1
+    x -= 1;
+    y -= 1;
+
+    // check if value is fixed
+    if (fixed[y][x] == TRUE) {
+        printf("This value can't be changed\n");
+    } else {
+        game[y][x] = value;
+
+        // show the new game array
+        show_game(game);
+    }
+
+    // return the new game array
     return game;
 }
 
@@ -43,6 +83,8 @@ char ** init_sudoku(char ** game, char ** fixed) {
 void show_game(char ** game) {
     int x, y, i;
     int width = 9*3 + 4;
+
+    printf("\n");
 
     // print frist horizontal
     for (i = 0; i < width; i++) printf("-");
@@ -157,12 +199,24 @@ int main () {
     // 1 - value is fixed 
     char ** fixed;
 
-    game = init_sudoku(game, fixed);
+    // create the game
+    game = init_sudoku(game);
+    fixed = get_fixed_values(game, fixed);
 
+    // show the game for the first time
     show_game(game);
 
-    int s = check_solved(game);
-    printf("\n%d\n", s);
+    int solved;
+    while (TRUE) {
+        game = get_user_action(game, fixed);
+        solved = check_solved(game);
 
+        if (solved == TRUE) {
+            printf("The sudoku is solved");
+            break;
+        }
+    }
+    
+    
     return 1;
 }
