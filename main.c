@@ -1,47 +1,54 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #define TRUE 1
 #define FALSE 0
 
+#include <stdio.h>
+#include <stdlib.h>
+#include "solve.h"
+
+
 // declare all functions
+char ** copy_game_array(char ** source, char ** target);
 char ** init_sudoku(char ** game);
+char ** generate_sudoku(char ** game);
 char ** get_fixed_values(char ** game, char ** fixed);
 char ** get_user_action(char ** game, char ** fixed);
 void show_game(char ** game);
 int check_solved(char ** game);
 
-// Init the array with the start sudoku field
-char ** init_sudoku(char ** game) {
+// Copys game from one array to another
+char ** copy_game_array(char ** source, char ** target) {
+    for (int x = 0; x < 9; x ++) {
+        for (int y = 0; y < 9; y++) {
+            target[y][x] = source[y][x];
+        }
+    }
+    return target;
+}
+
+// Init the array 
+char ** init_sudoku_array(char ** array) {
     
     //// allocate the memory for the game array ////
-    game = (char **) malloc(9 * sizeof(char * ));
+    array = (char **) malloc(9 * sizeof(char * ));
     for (int row = 0; row < 9; row ++) {
-        game[row] = (char * ) malloc(9 * sizeof(char));
-    }
-
-    //// create the sudoku values ////
-    int x, y;
-    for (y = 0; y < 9; y++) {
-        for (x = 0; x < 9; x ++) {
-            game[y][x] = 1;
-        }
+        array[row] = (char * ) malloc(9 * sizeof(char));
     }
 
     //// return the initialised game array pointer ////
+    return array;
+}
+
+
+// Generate the start
+char ** generate_sudoku(char ** game) {
+
+
     return game;
 }
 
 
+// After game generation and check if possible get the fixed values
 char ** get_fixed_values(char ** game, char ** fixed) {
-    
-    //// allocate the memory for the fixed array ////
-    fixed = (char **) malloc(9 * sizeof(char * ));
-    for (int row = 0; row < 9; row ++) {
-        fixed[row] = (char * ) malloc(9 * sizeof(char));
-    }
-
-    //// get what values are fixed from the game array ////
     for (int y = 0; y < 9; y++) {
         for (int x = 0; x < 9; x++) {
             if (game[y][x] == 0) fixed[y][x] = FALSE; 
@@ -80,6 +87,7 @@ char ** get_user_action(char ** game, char ** fixed) {
 }
 
 
+// Print game to console
 void show_game(char ** game) {
     int x, y, i;
     int width = 9*3 + 4;
@@ -132,6 +140,7 @@ void show_game(char ** game) {
 }
 
 
+// Check if the game is solved
 int check_solved(char ** game) {
     int x, y;
     int target = 1+2+3+4+5+6+7+8+9;
@@ -193,14 +202,16 @@ int main () {
     
     // create the main array that holds the values
     char ** game;
+    game = init_sudoku_array(game);
 
     // crete the array that stores if a value is changeable
     // 0 - value can be changed
     // 1 - value is fixed 
     char ** fixed;
+    fixed = init_sudoku_array(fixed);
 
     // create the game
-    game = init_sudoku(game);
+    game = generate_sudoku(game);
     fixed = get_fixed_values(game, fixed);
 
     // show the game for the first time
