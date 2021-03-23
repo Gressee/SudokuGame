@@ -3,17 +3,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include "sudoku.h"
 #include "solve.h"
 
-
-// declare all functions
-char ** copy_game_array(char ** source, char ** target);
-char ** init_sudoku(char ** game);
-char ** generate_sudoku(char ** game);
-char ** get_fixed_values(char ** game, char ** fixed);
-char ** get_user_action(char ** game, char ** fixed);
-void show_game(char ** game);
-int check_solved(char ** game);
 
 // Copys game from one array to another
 char ** copy_game_array(char ** source, char ** target) {
@@ -24,6 +17,7 @@ char ** copy_game_array(char ** source, char ** target) {
     }
     return target;
 }
+
 
 // Init the array 
 char ** init_sudoku_array(char ** array) {
@@ -41,7 +35,27 @@ char ** init_sudoku_array(char ** array) {
 
 // Generate the start
 char ** generate_sudoku(char ** game) {
+    // Init random number generation
+    srand((unsigned int)time(NULL));
 
+    int clues = 25;
+    int i, x, y, val;
+    for (i = 0; i < clues; i++) {
+        
+        // Generate the new field aslong as the game is not solvable
+        do {
+            // Generate the new value
+            val = rand() % 9 + 1;
+            
+            // Generate the new coords aslong as the space is already taken
+            do {
+                x = rand() % 9;
+                y = rand() % 9;
+            } while (game[y][x] != 0);
+        } while (check_solvable(game) == FALSE);
+        
+        
+    }
 
     return game;
 }
@@ -205,15 +219,13 @@ int main () {
     game = init_sudoku_array(game);
 
     // crete the array that stores if a value is changeable
-    // 0 - value can be changed
-    // 1 - value is fixed 
     char ** fixed;
     fixed = init_sudoku_array(fixed);
 
     // create the game
     game = generate_sudoku(game);
     fixed = get_fixed_values(game, fixed);
-
+    /*    
     // show the game for the first time
     show_game(game);
 
@@ -227,7 +239,6 @@ int main () {
             break;
         }
     }
-    
-    
+    */
     return 1;
 }
