@@ -40,7 +40,16 @@ char ** generate_sudoku(char ** game) {
 
     int clues = 25;
     int i, x, y, val;
-    for (i = 0; i < clues; i++) {
+
+    // Generate 15 clues without checking if its solveable
+    for (i = 0; i < 20; i++) {
+        x = rand() % 9;
+        y = rand() % 9;
+        val = rand() % 9 + 1;
+        game[y][x] = val;
+    }
+
+    for (i = 0; i < clues-15; i++) {
         
         // Generate the new field aslong as the game is not solvable
         do {
@@ -52,17 +61,19 @@ char ** generate_sudoku(char ** game) {
                 x = rand() % 9;
                 y = rand() % 9;
             } while (game[y][x] != 0);
-        } while (check_solvable(game) == FALSE);
-        
-        
-    }
+            
+            // Set the new value
+            game[y][x] = val;
 
+        } while (solve(game, 1) == FALSE);    
+    }
     return game;
 }
 
 
 // After game generation and check if possible get the fixed values
 char ** get_fixed_values(char ** game, char ** fixed) {
+
     for (int y = 0; y < 9; y++) {
         for (int x = 0; x < 9; x++) {
             if (game[y][x] == 0) fixed[y][x] = FALSE; 
@@ -224,7 +235,8 @@ int main () {
 
     // create the game
     game = generate_sudoku(game);
-    fixed = get_fixed_values(game, fixed);
+    show_game(game);
+    //fixed = get_fixed_values(game, fixed);
     /*    
     // show the game for the first time
     show_game(game);
