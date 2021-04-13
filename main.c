@@ -8,6 +8,7 @@
 #include "solve.h"
 
 
+
 // Copys game from one array to another
 char ** copy_game_array(char ** source, char ** target) {
     for (int x = 0; x < 9; x ++) {
@@ -295,3 +296,5 @@ int main () {
     
     return 1;
 }
+
+
