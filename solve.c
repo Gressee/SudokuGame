@@ -9,7 +9,7 @@
 
 // This function gets called recusive to bute force a solution
 int solve(char ** game, int n) {
-    show_game(game);
+    
     // Find the next empty field 
     int x, y;
     int empty_x = -1;
@@ -40,9 +40,6 @@ int solve(char ** game, int n) {
         int in_row = val_in_row(game, empty_y, val);
         int in_col = val_in_col(game, empty_x, val);
         int in_box = val_in_box(game, empty_box, val);
-        //printf("Valid: %d %d %d %d\n", val, in_row, in_col, in_box);
-        // If everything is false then the value 
-        // can be placed in the empty field
         if (in_row == FALSE && in_col == FALSE && in_box == FALSE) {
             game[empty_y][empty_x] = val;
             
@@ -95,14 +92,16 @@ int val_in_box(char ** game, int box, int val) {
     int x_offset;
     int y_offset;
 
-    x_offset = box % 3;
+    
+    x_offset = box % 3 * 3;
     if (box < 3) {
         y_offset = 0;
     } else if (box < 6) {
-        y_offset = 1;
-    } else {
-        y_offset = 2;
+        y_offset = 3;
+    } else if (box < 9) {
+        y_offset = 6;
     }
+    
 
     // Check the box for the value
     if (game[0 + y_offset][0 + x_offset] == val) return TRUE;

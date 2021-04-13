@@ -7,7 +7,7 @@ char ** init_sudoku(char ** game);
 char ** generate_sudoku(char ** game);
 char ** get_fixed_values(char ** game, char ** fixed);
 char ** get_user_action(char ** game, char ** fixed);
-void show_game(char ** game);
+void show_game(char ** game, char ** fixed);
 int check_solved(char ** game);
 
 #endif

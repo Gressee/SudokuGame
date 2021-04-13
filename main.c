@@ -36,37 +36,71 @@ char ** init_sudoku_array(char ** array) {
 // Generate the start
 char ** generate_sudoku(char ** game) {
     // Init random number generation
-    srand((unsigned int)time(NULL));
+    //srand((unsigned int)time(NULL));
 
     int clues = 25;
     int i, x, y, val;
 
-    // Generate 15 clues without checking if its solveable
-    for (i = 0; i < 20; i++) {
-        x = rand() % 9;
-        y = rand() % 9;
-        val = rand() % 9 + 1;
+    int possible = TRUE;
+    int in_row, in_col, in_box;
+
+    char ** test_game;
+    test_game = init_sudoku_array(test_game);
+
+    // Generate clues without checking if its solveable
+    for (i = 0; i < clues; i++) {
+        
+        do {
+            x = rand() % 9;
+            y = rand() % 9;
+            val = rand() % 9 + 1;
+
+            // Check if value is possible in this field
+            in_row = val_in_row(game, y, val);
+            in_col = val_in_col(game, x, val);
+            in_box = val_in_box(game, get_box_num(x, y), val);
+
+            if (in_row == FALSE && in_col == FALSE && in_box == FALSE) {
+                possible = TRUE;
+            } else {
+                possible = FALSE;
+            }
+        } while (game[y][x] != 0 || possible == FALSE);
+
         game[y][x] = val;
     }
-
-    for (i = 0; i < clues-15; i++) {
+    
+    // Generate the new field aslong as the game is not solvable
+    do {
+        // Generate the new value
+        val = rand() % 9 + 1;
         
-        // Generate the new field aslong as the game is not solvable
+        // Generate the new coords aslong as the space is already taken
         do {
-            // Generate the new value
-            val = rand() % 9 + 1;
-            
-            // Generate the new coords aslong as the space is already taken
-            do {
-                x = rand() % 9;
-                y = rand() % 9;
-            } while (game[y][x] != 0);
-            
-            // Set the new value
-            game[y][x] = val;
+            x = rand() % 9;
+            y = rand() % 9;
 
-        } while (solve(game, 1) == FALSE);    
-    }
+            // Check if value is possible in this field
+            in_row = val_in_row(game, y, val);
+            in_col = val_in_col(game, x, val);
+            in_box = val_in_box(game, get_box_num(x, y), val);
+
+            if (in_row == FALSE && in_col == FALSE && in_box == FALSE) {
+                possible = TRUE;
+            } else {
+                possible = FALSE;
+            }
+
+        } while (game[y][x] != 0 || possible == FALSE);
+        
+        // Set the new value
+        game[y][x] = val;
+
+        // copy game to a new array to test solve
+        test_game = copy_game_array(game, test_game);
+
+    } while (solve(test_game, 1) == FALSE);    
+    
     return game;
 }
 
@@ -76,8 +110,8 @@ char ** get_fixed_values(char ** game, char ** fixed) {
 
     for (int y = 0; y < 9; y++) {
         for (int x = 0; x < 9; x++) {
-            if (game[y][x] == 0) fixed[y][x] = FALSE; 
-            else fixed[y][x] = TRUE;
+            if (game[y][x] == 0) fixed[y][x] = 0; 
+            else fixed[y][x] = 1;
         }
     }
 
@@ -102,9 +136,6 @@ char ** get_user_action(char ** game, char ** fixed) {
         printf("This value can't be changed\n");
     } else {
         game[y][x] = value;
-
-        // show the new game array
-        show_game(game);
     }
 
     // return the new game array
@@ -113,9 +144,15 @@ char ** get_user_action(char ** game, char ** fixed) {
 
 
 // Print game to console
-void show_game(char ** game) {
+void show_game(char ** game, char ** fixed) {
     int x, y, i;
     int width = 9*3 + 4;
+
+    // Define Colorsets
+    char * color_set;
+    char c_normal[] = "\033[0m";
+    char c_fixed[] = "\033[30;47m";
+    char c_user_val[] = "\033[96m";
 
     printf("\n");
 
@@ -145,7 +182,10 @@ void show_game(char ** game) {
 
             // Print number (only if there is an entry, if not the the value in the array is 0)
             if (game[y][x] != 0) {
-                printf(" %d ", game[y][x]);
+                if (fixed[y][x]) color_set = c_fixed;
+                else color_set = c_user_val;
+
+                printf(" %s%d%s ", color_set, game[y][x], c_normal);
             } else {
                 printf("   ");
             }
@@ -235,22 +275,23 @@ int main () {
 
     // create the game
     game = generate_sudoku(game);
-    show_game(game);
-    //fixed = get_fixed_values(game, fixed);
-    /*    
+    fixed = get_fixed_values(game, fixed);
+    
     // show the game for the first time
-    show_game(game);
+    show_game(game, fixed);
 
     int solved;
     while (TRUE) {
         game = get_user_action(game, fixed);
+        show_game(game, fixed);
         solved = check_solved(game);
+        
 
         if (solved == TRUE) {
             printf("The sudoku is solved");
             break;
         }
     }
-    */
+    
     return 1;
 }
