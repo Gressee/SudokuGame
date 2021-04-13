@@ -289,7 +289,7 @@ int main () {
         
 
         if (solved == TRUE) {
-            printf("The sudoku is solved");
+            printf("You're Winner!!");
             break;
         }
     }
